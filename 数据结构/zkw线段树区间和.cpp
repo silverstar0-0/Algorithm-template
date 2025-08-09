@@ -41,5 +41,4 @@ il int query(int s, int t){
   return ans;
 }
 int main() {
-  //还是按需编写
 }
