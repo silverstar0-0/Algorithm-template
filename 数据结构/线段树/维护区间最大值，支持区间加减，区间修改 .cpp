@@ -62,7 +62,7 @@ void add(int l,int r,int pos,int tarl,int tarr,int x){
 void reset(int l,int r,int pos,int tarl,int tarr,int x){
 	if(l>=tarl&&r<=tarr){
 		tree[pos]=x;
-		lazyp[pos]=0;
+		lazy[pos]=0;
 		if(l!=r){
 			change[pos]=x;
 			ischanged[pos]=true;
