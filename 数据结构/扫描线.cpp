@@ -4,7 +4,7 @@
 #define int long long
 typedef long long LL;
 typedef long double LD;
-using namespace std;//你在看我的代码对吧 
+using namespace std;
 const int inf=1e18;
 const LL N=1000100;
 int M;
@@ -27,14 +27,11 @@ struct SegmentTree{
 void Build(int n){
 	M=1;
     for(;M<=n+1;M<<=1);
-    // cout<<M<<endl;
 }
 void Change(int s,int t,int c)
 {
-    // cout<<M<<endl;
     for(s=s+M-1,t=t+M+1;t^s^1;t>>=1,s>>=1)
     {
-        // cout<<mx(s^1)<<' '<<s<<' '<<t<<endl;
         if(s<M) mx(s)=max(mx(s<<1|1),mx(s<<1))+add(s);
         if(t<M) mx(t)=max(mx(t<<1|1),mx(t<<1))+add(t);
         if(~s&1) add(s^1)+=c,mx(s^1)+=c;
@@ -50,7 +47,6 @@ int ask(int s,int t)
     int lans=-inf,rans=-inf;
     for(s=s+M-1,t=t+M+1;t^s^1;t>>=1,s>>=1)
     {
-        // cout<<mx(s^1)<<' '<<s<<' '<<t<<endl;
         if(add(s)) lans+=add(s);
         if(add(t)) rans+=add(t);
         if(~s&1) lans=max(lans,mx(s^1));
@@ -86,11 +82,8 @@ signed main(){
 			Seg[i].r=pos2;
 		}
 		Build(cnt);
-        // cout<<1<<endl;
-        // cout<<cnt<<endl;
 		LL ans=0;
 		for(LL i=1;i<=n;i++){
-            // cout<<tree[1].mx<<' '<<Seg[i].val<<endl;
 			Change(Seg[i].l,Seg[i].r,Seg[i].val);
 			ans=max(ans,mx(1));
 		}
