@@ -102,4 +102,3 @@ int main(void){
 	}
 	return 0;
 }
-//注：不支持重复匹配子串①
