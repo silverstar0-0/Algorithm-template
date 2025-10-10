@@ -1,14 +1,14 @@
 #include<bits/stdc++.h>
 using namespace std;
 #define int long long
-const int maxn=1e6+5;
+const int maxn=5e5+5;
 string s;
 int cnt,lastpos;
-int ans;
 class node{
 public:
 	int link=0,endpos=0,maxlen=0;//endpos沿着link推送可以得到子串的出现集合 
-	int times=1;//记录在该endpos且长度为maxlen的子串出现了多少次 
+	int times=1;//times记录在该endpos且长度为sam[sam[posnow].link].maxlen+1到maxlen的子串出现了多少次
+	int num0=0,num1=0;//num0记录沿着该转移往下共有多少子串(结束位置不同视为不同),num1记录所有不同子串(结束位置不同视为相同)
 	int to[26];
 };
 node sam[2*maxn];
@@ -56,28 +56,70 @@ void clear(void){//初始化
 	cnt=1;
 	return;
 }
+void topo(void){				//更新所有子串出现次数
+	for(int i=0;i<cnt-1;i++) a[i]={sam[i+1].maxlen,i+1};
+	sort(a,a+cnt-1,greater<pair<int,int>>());
+	for(int i=0;i<cnt-1;i++) if(sam[a[i].second].link!=-1) sam[sam[a[i].second].link].times+=sam[a[i].second].times;
+	return;
+}
+void dfs_num(int pos){
+	sam[pos].num0=sam[pos].times;
+	sam[pos].num1=1;
+	for(int i=0;i<26;i++){
+		if(sam[pos].to[i]){
+			if(!sam[sam[pos].to[i]].num0) dfs_num(sam[pos].to[i]);
+			sam[pos].num0+=sam[sam[pos].to[i]].num0;
+			sam[pos].num1+=sam[sam[pos].to[i]].num1;
+		}
+	}
+	return;
+}
 void create(void){
 	clear();//初始化 
 	int l=s.size();
 	for(int i=0;i<l;i++){
 		add(i);//逐个添加 
 	}
+	topo();
+	dfs_num(0);
 	return;
 }
-void dfs(void){				//更新所有子串出现次数，同时更新长度大于等于2的子串的长度乘次数的最大值 
-	for(int i=0;i<cnt-1;i++) a[i]={sam[i+1].maxlen,i+1};
-	sort(a,a+cnt-1,greater<pair<int,int>>());
-	for(int i=0;i<cnt-1;i++){
-		if(sam[a[i].second].link!=-1) sam[sam[a[i].second].link].times+=sam[a[i].second].times;
-		if(sam[a[i].second].times>1) ans=max(ans,sam[a[i].second].times*sam[a[i].second].maxlen);
+void kth0(int k,int pos){	//第k大字符串(不去重) 
+	int ans=sam[pos].times;
+	if(pos==0) ans=0;
+	if(k<=ans) return;
+	for(int i=0;i<26;i++){
+		if(!sam[pos].to[i]) continue;
+		if(ans+sam[sam[pos].to[i]].num0<k) ans+=sam[sam[pos].to[i]].num0; 
+		else{
+			cout<<char(i+'a');
+			kth0(k-ans,sam[pos].to[i]);
+			return;
+		}
 	}
+	if(pos==0) cout<<-1;
+	return;
+}
+void kth1(int k,int pos){	//第k大字符串(去重) 
+	int ans=1;
+	if(pos==0) ans=0;
+	if(k<=ans) return;
+	for(int i=0;i<26;i++){
+		if(!sam[pos].to[i]) continue;
+		if(ans+sam[sam[pos].to[i]].num1<k) ans+=sam[sam[pos].to[i]].num1;
+		else{
+			cout<<char(i+'a');
+			kth1(k-ans,sam[pos].to[i]);
+			return;
+		}
+	}
+	if(pos==0) cout<<-1;
 	return;
 }
 signed main(void){
 	cin>>s;
 	for(int i=0;i<s.size();i++) s[i]-='a';
 	create();
-	dfs();
-	cout<<ans<<'\n';
+	//进行操作 
 	return 0;
 }
