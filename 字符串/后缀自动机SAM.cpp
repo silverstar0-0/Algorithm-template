@@ -2,6 +2,8 @@
 using namespace std;
 #define int long long
 const int maxn=5e5+5;
+const int chartype=10;//根据字符类型改变数量 
+const char del='0';//初始化原始字符串，小写为a，大写为A，数字为0 
 string s;
 int cnt,lastpos;
 class node{
@@ -9,7 +11,7 @@ public:
 	int link=0,endpos=0,maxlen=0;//endpos沿着link推送可以得到子串的出现集合 
 	int times=1;//times记录在该endpos且长度为sam[sam[posnow].link].maxlen+1到maxlen的子串出现了多少次
 	int num0=0,num1=0;//num0记录沿着该转移往下共有多少子串(结束位置不同视为不同),num1记录所有不同子串(结束位置不同视为相同)
-	int to[26];
+	int to[chartype];
 };
 node sam[2*maxn];
 pair<int,int> a[2*maxn];
@@ -49,7 +51,7 @@ void add(int pos){
 void clear(void){//初始化 
 	for(int i=0;i<cnt;i++){
 		sam[i].endpos=sam[i].link=sam[i].maxlen=0;
-		for(int j=0;j<26;j++) sam[i].to[j]=0;
+		for(int j=0;j<chartype;j++) sam[i].to[j]=0;
 	}
 	sam[0].link=-1;
 	lastpos=0;
@@ -65,7 +67,7 @@ void topo(void){				//更新所有子串出现次数
 void dfs_num(int pos){
 	sam[pos].num0=sam[pos].times;
 	sam[pos].num1=1;
-	for(int i=0;i<26;i++){
+	for(int i=0;i<chartype;i++){
 		if(sam[pos].to[i]){
 			if(!sam[sam[pos].to[i]].num0) dfs_num(sam[pos].to[i]);
 			sam[pos].num0+=sam[sam[pos].to[i]].num0;
@@ -88,7 +90,7 @@ void kth0(int k,int pos){	//第k大字符串(不去重)
 	int ans=sam[pos].times;
 	if(pos==0) ans=0;
 	if(k<=ans) return;
-	for(int i=0;i<26;i++){
+	for(int i=0;i<chartype;i++){
 		if(!sam[pos].to[i]) continue;
 		if(ans+sam[sam[pos].to[i]].num0<k) ans+=sam[sam[pos].to[i]].num0; 
 		else{
@@ -104,7 +106,7 @@ void kth1(int k,int pos){	//第k大字符串(去重)
 	int ans=1;
 	if(pos==0) ans=0;
 	if(k<=ans) return;
-	for(int i=0;i<26;i++){
+	for(int i=0;i<chartype;i++){
 		if(!sam[pos].to[i]) continue;
 		if(ans+sam[sam[pos].to[i]].num1<k) ans+=sam[sam[pos].to[i]].num1;
 		else{
@@ -118,7 +120,7 @@ void kth1(int k,int pos){	//第k大字符串(去重)
 }
 signed main(void){
 	cin>>s;
-	for(int i=0;i<s.size();i++) s[i]-='a';
+	for(int i=0;i<s.size();i++) s[i]-=del;
 	create();
 	//进行操作 
 	return 0;
